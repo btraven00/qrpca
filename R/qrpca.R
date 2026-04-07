@@ -18,8 +18,10 @@
 #' @param scale a logical value indicating whether the columns of \code{x}
 #'   should be scaled to have unit variance before the analysis takes place. The
 #'   default is \code{FALSE} for consistency with \code{prcomp}.
-#'  @param cuda a logical value indicating whether cuda acceleration should be
-#'  used. The default is \code{FALSE}.
+#' @param cuda a logical value indicating whether cuda acceleration should be
+#'   used. The default is \code{FALSE}.
+#' @param mps a logical value indicating whether MPS (Metal Performance Shaders)
+#'   acceleration should be used on Apple Silicon. The default is \code{FALSE}.
 #' @return \code{qrpca} returns a list with class \code{prcomp}
 #'   containing the following elements: \item{sdev}{the additional standard
 #'   deviation explained by each component.}
@@ -30,9 +32,14 @@
 #'   \item{center, scale}{the centering and
 #'   scaling used, or \code{FALSE}}
 #' @export
-qrpca <- function(x,center = TRUE, scale = FALSE,cuda = FALSE){
-  if(cuda == TRUE){device = torch_device("cuda:0")} else
-  device = torch_device(type='cpu')
+qrpca <- function(x,center = TRUE, scale = FALSE,cuda = FALSE, mps = FALSE){
+  if(mps == TRUE && torch::backends_mps_is_available()){
+    device = torch_device("mps")
+  } else if(cuda == TRUE){
+    device = torch_device("cuda:0")
+  } else {
+    device = torch_device(type='cpu')
+  }
   x <- scale(x, center = center, scale = scale)
   cen <- attr(x, "scaled:center")
   sc <- attr(x, "scaled:scale")

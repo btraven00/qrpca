@@ -2,7 +2,7 @@
 [![DOI](https://zenodo.org/badge/481248275.svg)](https://zenodo.org/badge/latestdoi/481248275)
 # qrpca(R package)
 
-qrpca behaves similarly prcomp. But employs a QR-based PCA instead of applying singular value decomposition on the original matrix. The code uses torch under the hood for matrix operations and supports GPU acceleration.
+qrpca behaves similarly prcomp. But employs a QR-based PCA instead of applying singular value decomposition on the original matrix. The code uses torch under the hood for matrix operations and supports GPU acceleration on CUDA (NVIDIA) and MPS (Apple Silicon).
 
 ## Installation
 
@@ -25,7 +25,8 @@ set.seed(42)
   X <- matrix(rnorm(N*M), M)
   system.time(prcomp(X))
   system.time(qrpca(X))
-  system.time(qrpca(X,cuda = TRUE))
+  system.time(qrpca(X, cuda = TRUE))  # For NVIDIA GPUs
+  system.time(qrpca(X, mps = TRUE))   # For Apple Silicon (M1/M2/M3/etc)
 ```
  For an astronomical example, we use a datacube from MaNGA for galaxy. It comprises a tensor [74,74,4563], of two spatial dimensions and one spectral dimension. The following code reads the cube and flattens the spectra into a matrix of dimension [5476,4563]
  
